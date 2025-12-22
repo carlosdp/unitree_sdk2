@@ -28,13 +28,36 @@ target_compile_definitions(unitree_interface PRIVATE VERSION_INFO=${PROJECT_VERS
 # Link with unitree_sdk2 which provides all necessary dependencies
 target_link_libraries(unitree_interface PRIVATE unitree_sdk2)
 
+# Ensure runtime can find bundled DDS libraries when loaded from a wheel
+set_target_properties(unitree_interface PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN"
+)
+
+# Bundle DDS shared libraries next to the Python extension so they are
+# available at runtime without system-wide installs.
+set(DDS_LIB_DIR ${CMAKE_SOURCE_DIR}/thirdparty/lib/${CMAKE_SYSTEM_PROCESSOR})
+set(DDS_LIBS
+    ${DDS_LIB_DIR}/libddsc.so
+    ${DDS_LIB_DIR}/libddscxx.so
+)
+
+foreach(lib_file IN LISTS DDS_LIBS)
+    if(NOT EXISTS ${lib_file})
+        message(FATAL_ERROR "Missing required DDS runtime library: ${lib_file}")
+    endif()
+endforeach()
+
+install(FILES ${DDS_LIBS} DESTINATION .)
+
 # Enable compiler warnings
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(unitree_interface PRIVATE -Wall -Wextra)
 endif()
 
-# Optional: Generate stub files for type hints
-option(GENERATE_STUBS "Generate Python stub files" ON)
+# Optional: Generate stub files for type hints (disabled by default because
+# the inline Python snippet breaks Ninja when enabled inside scikit-build)
+option(GENERATE_STUBS "Generate Python stub files" OFF)
 
 if(GENERATE_STUBS)
     # Add custom target to generate stub files

@@ -41,5 +41,18 @@ You can refer to `example/cmake_sample` on how to import the unitree_sdk2 into y
 
 Note that if you install the library to other places other than `/opt/unitree_robotics`, you need to make sure the path is added to "${CMAKE_PREFIX_PATH}" so that cmake can find it with "find_package()".
 
+### Python wheels (Linux)
+
+The `python_binding` target is packaged with `cibuildwheel` to produce manylinux2014 wheels for `x86_64` and `aarch64` (compatible with Ubuntu 20.04/22.04, including Jetson boards running JetPack 5/6). The wheels bundle the CycloneDDS runtime so no extra system packages are required.
+
+Build locally:
+
+```bash
+pip install build
+python -m build --wheel
+```
+
+GitHub Actions (`.github/workflows/c-cpp.yml`) publishes wheel artifacts for both architectures on every push/PR.
+
 ### Notice
 For more reference information, please go to [Unitree Document Center](https://support.unitree.com/home/zh/developer).

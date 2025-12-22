@@ -1,23 +1,41 @@
-name: C/C++ CI
+name: Build and Wheels
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev", "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev", "main" ]
 
 jobs:
   build:
-
-    runs-on: ubuntu-20.04
-
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - name: install deps
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++ build-essential libyaml-cpp-dev
-    - name: cmake
-      run: |
-        cmake -Bbuild
-        cmake --build build -j
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ build-essential libyaml-cpp-dev
+      - name: Configure and build
+        run: |
+          cmake -Bbuild
+          cmake --build build -j
+
+  wheels:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheels (x86_64 + aarch64)
+        env:
+          CIBW_PLATFORM: linux
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cibuildwheel==2.21.3
+          cibuildwheel --platform linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unitree-sdk2-wheels
+          path: wheelhouse/*.whl
