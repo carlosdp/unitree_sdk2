@@ -259,6 +259,7 @@ class UnitreeInterface {
   PyLowState ReadLowState();
   PyWirelessController ReadWirelessController();
   void WriteLowCommand(const PyMotorCommand& command);
+  void ClearLowCommand();
   void SetControlMode(PyControlMode mode);
   PyControlMode GetControlMode() const;
 

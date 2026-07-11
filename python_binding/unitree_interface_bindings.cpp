@@ -85,6 +85,7 @@ PYBIND11_MODULE(unitree_interface, m) {
         .def("read_low_state", &UnitreeInterface::ReadLowState)
         .def("read_wireless_controller", &UnitreeInterface::ReadWirelessController)
         .def("write_low_command", static_cast<void(UnitreeInterface::*)(const PyMotorCommand&)>(&UnitreeInterface::WriteLowCommand))
+        .def("clear_low_command", &UnitreeInterface::ClearLowCommand)
         .def("set_control_mode", &UnitreeInterface::SetControlMode)
         .def("get_control_mode", &UnitreeInterface::GetControlMode)
         

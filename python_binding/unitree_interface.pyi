@@ -166,6 +166,10 @@ class UnitreeInterface:
         """
         ...
 
+    def clear_low_command(self) -> None:
+        """Stop publishing the buffered low-level motor command."""
+        ...
+
     def set_control_mode(self, mode: ControlMode) -> None:
         """
         Set control mode (PR or AB)

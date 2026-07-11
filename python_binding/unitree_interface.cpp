@@ -386,6 +386,10 @@ void UnitreeInterface::WriteLowCommand(const PyMotorCommand& command) {
     motor_command_buffer_.SetData(internal_cmd);
 }
 
+void UnitreeInterface::ClearLowCommand() {
+    motor_command_buffer_.Clear();
+}
+
 void UnitreeInterface::SetControlMode(PyControlMode mode) {
     mode_ = mode;
 }
