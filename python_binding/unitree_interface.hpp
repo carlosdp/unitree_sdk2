@@ -110,13 +110,14 @@ struct PyMotorState {
 };
 
 struct PyMotorCommand {
+  std::vector<uint8_t> mode;
   std::vector<float> q_target;
   std::vector<float> dq_target;
   std::vector<float> kp;
   std::vector<float> kd;
   std::vector<float> tau_ff;
   
-  PyMotorCommand(int num_motors) : q_target(num_motors), dq_target(num_motors), 
+  PyMotorCommand(int num_motors) : mode(num_motors, 1), q_target(num_motors), dq_target(num_motors),
                                    kp(num_motors), kd(num_motors), tau_ff(num_motors) {}
 };
 
@@ -151,13 +152,14 @@ struct ImuState {
 };
 
 struct MotorCommand {
+  std::vector<uint8_t> mode;
   std::vector<float> q_target;
   std::vector<float> dq_target;
   std::vector<float> kp;
   std::vector<float> kd;
   std::vector<float> tau_ff;
   
-  MotorCommand(int num_motors) : q_target(num_motors), dq_target(num_motors), 
+  MotorCommand(int num_motors) : mode(num_motors, 1), q_target(num_motors), dq_target(num_motors),
                                  kp(num_motors), kd(num_motors), tau_ff(num_motors) {}
 };
 

@@ -204,6 +204,7 @@ class MotorState:
     voltage: List[float]    # 电机电压 [V]
 
 class MotorCommand:
+    mode: List[int]         # 电机使能模式（0=禁用，1=启用）
     q_target: List[float]   # 目标关节位置 [rad]
     dq_target: List[float]  # 目标关节速度 [rad/s]
     kp: List[float]         # 位置增益
@@ -278,4 +279,4 @@ class WirelessController:
 
 ## 许可证
 
-请参考 Unitree SDK2 的许可证条款。 
+请参考 Unitree SDK2 的许可证条款。

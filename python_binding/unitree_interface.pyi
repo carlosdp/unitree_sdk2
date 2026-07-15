@@ -67,6 +67,7 @@ class MotorState:
 
 class MotorCommand:
     """Motor command data for all joints"""
+    mode: List[int]         # Motor enable mode (0=disabled, 1=enabled)
     q_target: List[float]    # Target joint positions [rad] (variable length)
     dq_target: List[float]   # Target joint velocities [rad/s] (variable length)
     kp: List[float]          # Position gains (variable length)

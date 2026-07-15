@@ -1,5 +1,6 @@
 #include "unitree_interface.hpp"
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 #include <iomanip>
 
@@ -296,7 +297,7 @@ void UnitreeInterface::LowCommandWriter() {
         dds_low_command.mode_machine() = mode_machine_;
         
         for (size_t i = 0; i < config_.num_motors; i++) {
-            dds_low_command.motor_cmd().at(i).mode() = 1;
+            dds_low_command.motor_cmd().at(i).mode() = mc->mode[i];
             dds_low_command.motor_cmd().at(i).tau() = mc->tau_ff[i];
             dds_low_command.motor_cmd().at(i).q() = mc->q_target[i];
             dds_low_command.motor_cmd().at(i).dq() = mc->dq_target[i];
@@ -316,7 +317,7 @@ void UnitreeInterface::LowCommandWriter() {
         // dds_low_command.mode_machine() = mode_machine_;
         
         for (size_t i = 0; i < config_.num_motors; i++) {
-            dds_low_command.motor_cmd().at(i).mode() = 1;
+            dds_low_command.motor_cmd().at(i).mode() = mc->mode[i];
             dds_low_command.motor_cmd().at(i).tau() = mc->tau_ff[i];
             dds_low_command.motor_cmd().at(i).q() = mc->q_target[i];
             dds_low_command.motor_cmd().at(i).dq() = mc->dq_target[i];
@@ -358,7 +359,11 @@ PyLowState UnitreeInterface::ConvertToPyLowState() {
 }
 
 MotorCommand UnitreeInterface::ConvertFromPyMotorCommand(const PyMotorCommand& py_cmd) {
+    if (py_cmd.mode.size() != static_cast<size_t>(config_.num_motors)) {
+        throw std::invalid_argument("MotorCommand.mode length must match the configured motor count");
+    }
     MotorCommand cmd(config_.num_motors);
+    cmd.mode = py_cmd.mode;
     cmd.q_target = py_cmd.q_target;
     cmd.dq_target = py_cmd.dq_target;
     cmd.kp = py_cmd.kp;
@@ -429,6 +434,7 @@ void UnitreeInterface::IncomingLowCmdHandler(const void *message) {
         // Convert to internal MotorCommand
         MotorCommand cmd(config_.num_motors);
         for (int i = 0; i < config_.num_motors; i++) {
+            cmd.mode[i] = low_cmd.motor_cmd().at(i).mode();
             cmd.q_target[i] = low_cmd.motor_cmd().at(i).q();
             cmd.dq_target[i] = low_cmd.motor_cmd().at(i).dq();
             cmd.kp[i] = low_cmd.motor_cmd().at(i).kp();
@@ -452,6 +458,7 @@ void UnitreeInterface::IncomingLowCmdHandler(const void *message) {
         // Convert to internal MotorCommand
         MotorCommand cmd(config_.num_motors);
         for (int i = 0; i < config_.num_motors; i++) {
+            cmd.mode[i] = low_cmd.motor_cmd().at(i).mode();
             cmd.q_target[i] = low_cmd.motor_cmd().at(i).q();
             cmd.dq_target[i] = low_cmd.motor_cmd().at(i).dq();
             cmd.kp[i] = low_cmd.motor_cmd().at(i).kp();
@@ -469,6 +476,7 @@ PyMotorCommand UnitreeInterface::ReadIncomingCommand() {
     
     PyMotorCommand py_cmd(config_.num_motors);
     if (cmd) {
+        py_cmd.mode = cmd->mode;
         py_cmd.q_target = cmd->q_target;
         py_cmd.dq_target = cmd->dq_target;
         py_cmd.kp = cmd->kp;

@@ -46,6 +46,7 @@ PYBIND11_MODULE(unitree_interface, m) {
     
     py::class_<PyMotorCommand>(m, "MotorCommand")
         .def(py::init<int>())
+        .def_readwrite("mode", &PyMotorCommand::mode)
         .def_readwrite("q_target", &PyMotorCommand::q_target)
         .def_readwrite("dq_target", &PyMotorCommand::dq_target)
         .def_readwrite("kp", &PyMotorCommand::kp)
