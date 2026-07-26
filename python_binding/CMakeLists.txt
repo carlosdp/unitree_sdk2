@@ -50,6 +50,25 @@ endforeach()
 
 install(FILES ${DDS_LIBS} DESTINATION .)
 
+# Create SONAME-compatible symlinks inside the wheel install directory so the
+# Python extension can resolve libddsc.so.0 and libddscxx.so.0 at runtime.
+install(CODE [[
+    if(EXISTS "${CMAKE_INSTALL_PREFIX}/libddsc.so")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_INSTALL_PREFIX}/libddsc.so.0")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E create_symlink libddsc.so libddsc.so.0
+            WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+        )
+    endif()
+    if(EXISTS "${CMAKE_INSTALL_PREFIX}/libddscxx.so")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_INSTALL_PREFIX}/libddscxx.so.0")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E create_symlink libddscxx.so libddscxx.so.0
+            WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
+        )
+    endif()
+]])
+
 # Enable compiler warnings
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(unitree_interface PRIVATE -Wall -Wextra)
